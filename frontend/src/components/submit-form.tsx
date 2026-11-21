@@ -22,7 +22,20 @@ import { ACCEPTED_VIDEO, uploadWithProgress } from "@/lib/upload";
 import type { LayoutId } from "@/lib/layouts";
 import { isYouTubeUrl } from "@/lib/youtube";
 
-const EXAMPLES = ["only funny moments", "clips about Python tips", "the most controversial takes"];
+// Chips fill the instruction box. `text` must stay within the 500-character limit.
+const EXAMPLES: { label: string; text: string }[] = [
+  {
+    // What worked best on the channel: famous scene, one punchline, relatable satire (docs/SHORTS-INSIGHTS.md).
+    label: "famous scene + punchline",
+    text:
+      "Pick only scenes with one clear comic punchline or twist (word play, sudden entry, ironic reveal) that pays off within 60 seconds. " +
+      "Prefer famous, quotable dialogue and relatable everyday satire. The first 2 seconds must already be funny or intriguing. " +
+      "Skip slow build-ups, songs and action. Hindi (Devanagari) titles that tease the punchline, with one emoji.",
+  },
+  { label: "only funny moments", text: "only funny moments" },
+  { label: "clips about Python tips", text: "clips about Python tips" },
+  { label: "the most controversial takes", text: "the most controversial takes" },
+];
 
 export function SubmitForm() {
   const router = useRouter();
@@ -179,19 +192,20 @@ export function SubmitForm() {
               id="instruction"
               maxLength={500}
               rows={2}
-              placeholder={`e.g. "${EXAMPLES[0]}"`}
+              placeholder='e.g. "only funny moments"'
               value={instruction}
               onChange={(e) => setInstruction(e.target.value)}
             />
             <div className="flex flex-wrap gap-1.5">
               {EXAMPLES.map((ex) => (
                 <button
-                  key={ex}
+                  key={ex.label}
                   type="button"
-                  onClick={() => setInstruction(ex)}
+                  title={ex.text === ex.label ? undefined : ex.text}
+                  onClick={() => setInstruction(ex.text)}
                   className="rounded-full bg-secondary px-3 py-1 text-xs text-secondary-foreground transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 >
-                  {ex}
+                  {ex.label}
                 </button>
               ))}
             </div>
