@@ -1,12 +1,14 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Archive, ArrowLeft, ExternalLink, Trash2 } from "lucide-react";
+import { Archive, ArrowLeft, ExternalLink, Trash2, Upload } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { ClipCard } from "@/components/clip-card";
+import { UploadDialog } from "@/components/upload-dialog";
 import { ProjectProgress } from "@/components/project-progress";
 import { StatusBadge } from "@/components/status-badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -22,6 +24,7 @@ export function ProjectView() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [uploadAllOpen, setUploadAllOpen] = useState(false);
 
   const project = useQuery({
     queryKey: ["project", id],
@@ -113,9 +116,17 @@ export function ProjectView() {
               <span className="text-sm font-normal text-muted-foreground">sorted by virality score</span>
             </h2>
             {clips.data && clips.data.some((c) => c.video_url) && (
-              <a href={api.zipUrl(id)} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "rounded-full")}>
-                <Archive /> Download all (.zip)
-              </a>
+              <div className="flex flex-wrap gap-2">
+                <Button size="sm" className="rounded-full font-semibold" onClick={() => setUploadAllOpen(true)}>
+                  <Upload /> Upload all
+                </Button>
+                <a href={api.zipUrl(id)} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "rounded-full")}>
+                  <Archive /> Download all (.zip)
+                </a>
+              </div>
+            )}
+            {uploadAllOpen && clips.data && (
+              <UploadDialog clips={clips.data} open={uploadAllOpen} onOpenChange={setUploadAllOpen} />
             )}
           </div>
           {clips.isPending ? (

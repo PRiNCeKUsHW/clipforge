@@ -1,10 +1,12 @@
 "use client";
 
-import { Download, Loader2, Pencil, TriangleAlert } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { CheckCircle2, Download, ExternalLink, Loader2, Pencil, TriangleAlert, Upload } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { UploadDialog } from "@/components/upload-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { api } from "@/lib/api";
@@ -28,6 +30,17 @@ const BREAKDOWN: { key: keyof ScoreBreakdown; label: string }[] = [
 
 export function ClipCard({ clip, rank }: { clip: Clip; rank: number }) {
   const [downloading, setDownloading] = useState(false);
+  const [uploadOpen, setUploadOpen] = useState(false);
+  const ready = clip.status === "ready" && !!clip.video_url;
+  // Same query key as the editor's Publish tab, so both stay in sync.
+  const jobs = useQuery({
+    queryKey: ["publish-jobs", clip.id],
+    queryFn: () => api.listPublishJobs(clip.id),
+    enabled: ready,
+    refetchInterval: (q) => (q.state.data?.some((j) => j.status === "queued" || j.status === "uploading") ? 3000 : false),
+  });
+  const uploading = jobs.data?.some((j) => j.status === "queued" || j.status === "uploading");
+  const published = jobs.data?.find((j) => j.status === "published");
 
   async function download() {
     setDownloading(true);
@@ -112,14 +125,38 @@ export function ClipCard({ clip, rank }: { clip: Clip; rank: number }) {
           </p>
         )}
 
+        {(uploading || published) && (
+          <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            {uploading ? (
+              <>
+                <Loader2 className="size-3.5 animate-spin" /> Uploading…
+              </>
+            ) : (
+              <>
+                <CheckCircle2 className="size-3.5 text-emerald-500" /> Uploaded
+                {published?.privacy_status && ` (${published.privacy_status})`}
+                {published?.external_url && (
+                  <a href={published.external_url} target="_blank" rel="noreferrer" className="ml-1 flex items-center gap-0.5 text-primary hover:underline">
+                    View <ExternalLink className="size-3" />
+                  </a>
+                )}
+              </>
+            )}
+          </p>
+        )}
+
         <div className="mt-auto flex gap-2 pt-1">
           <Link href={`/clips/${clip.id}`} className={cn(buttonVariants({ variant: "default" }), "flex-1 rounded-full font-semibold")}>
             <Pencil /> Edit
           </Link>
+          <Button variant="outline" className="rounded-full" onClick={() => setUploadOpen(true)} disabled={!ready}>
+            <Upload /> Upload
+          </Button>
           <Button variant="outline" className="rounded-full" onClick={download} disabled={!clip.video_url || downloading} aria-label="Download MP4">
             {downloading ? <Loader2 className="animate-spin" /> : <Download />}
           </Button>
         </div>
+        {uploadOpen && <UploadDialog clips={[clip]} open={uploadOpen} onOpenChange={setUploadOpen} />}
       </CardContent>
     </Card>
   );
