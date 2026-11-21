@@ -98,9 +98,10 @@ def enqueued(monkeypatch):
 
 @pytest.fixture(autouse=True)
 def enqueued_tasks(monkeypatch):
-    calls: dict[str, list] = {"render": [], "publish": []}
+    calls: dict[str, list] = {"render": [], "publish": [], "cleanup": []}
     monkeypatch.setattr("app.api.clips.enqueue_render", lambda cid: calls["render"].append(cid))
     monkeypatch.setattr("app.api.clips.enqueue_publish", lambda jid: calls["publish"].append(jid))
+    monkeypatch.setattr("app.api.projects.enqueue_cleanup", lambda pid: calls["cleanup"].append(pid))
     return calls
 
 

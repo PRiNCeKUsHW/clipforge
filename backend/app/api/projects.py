@@ -16,7 +16,7 @@ from app.core.config import get_settings
 from app.core.db import SessionLocal, get_session
 from app.core.deps import get_storage
 from app.core.storage import Storage
-from app.core.tasks import enqueue_pipeline
+from app.core.tasks import enqueue_cleanup, enqueue_pipeline
 from app.models import TERMINAL_STATUSES, Clip, ProjectStatus, SourceType, User, VideoProject
 from app.schemas.clip import ClipRead
 from app.schemas.project import ProgressEvent, ProjectCreate, ProjectRead
@@ -134,6 +134,10 @@ async def delete_project(
             storage.delete(upload)
     except Exception:  # storage cleanup is best-effort; the DB row is already gone
         log.exception("Failed to delete storage objects for project %s", pid)
+    try:
+        enqueue_cleanup(project.id)
+    except Exception:  # best-effort too; the next deletion sweeps leftover folders anyway
+        log.exception("Failed to queue work-file cleanup for project %s", pid)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 

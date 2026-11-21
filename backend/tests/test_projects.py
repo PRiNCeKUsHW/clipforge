@@ -162,10 +162,12 @@ async def test_stalled_project_can_be_retried(client, auth, enqueued):
     assert enqueued[-1] == uuid.UUID(pid)
 
 
-async def test_delete_project(client, auth):
+async def test_delete_project(client, auth, enqueued_tasks):
     pid = await _make_project_with_clips(client, auth)
     assert (await client.delete(f"/api/projects/{pid}", headers=auth)).status_code == 204
     assert (await client.get(f"/api/projects/{pid}", headers=auth)).status_code == 404
+    # the worker is asked to remove the project's scratch files
+    assert [str(p) for p in enqueued_tasks["cleanup"]] == [str(pid)]
 
 
 # ---------------------------------------------------------------- SSE

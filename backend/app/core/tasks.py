@@ -16,6 +16,7 @@ celery_client.conf.task_ignore_result = True
 START_PIPELINE_TASK = "clipforge.pipeline.start"
 RENDER_CLIP_TASK = "clipforge.render.clip"
 PUBLISH_TASK = "clipforge.publish.run"
+CLEANUP_PROJECT_TASK = "clipforge.cleanup.project"
 
 
 def enqueue_pipeline(project_id: uuid.UUID) -> None:
@@ -28,3 +29,8 @@ def enqueue_render(clip_id: uuid.UUID) -> None:
 
 def enqueue_publish(job_id: uuid.UUID) -> None:
     celery_client.send_task(PUBLISH_TASK, args=[str(job_id)], queue="default")
+
+
+def enqueue_cleanup(project_id: uuid.UUID) -> None:
+    """Remove a deleted project's temporary files from the worker's work volume (the API can't see it)."""
+    celery_client.send_task(CLEANUP_PROJECT_TASK, args=[str(project_id)], queue="default")

@@ -10,6 +10,7 @@ project resume from where it stopped.
 from __future__ import annotations
 
 import json
+import shutil
 import tempfile
 import time
 import uuid
@@ -44,6 +45,7 @@ from clipforge_worker.celery_app import app
 from clipforge_worker.config import get_settings
 from clipforge_worker.context import (
     cleanup_project_dir,
+    orphan_work_dirs,
     get_detector,
     get_redis,
     get_storage,
@@ -633,3 +635,15 @@ def publish_clip(self, job_id: str) -> None:
             job.status, job.error = PublishStatus.published, None
             job.external_id, job.external_url = external_id, external_url
             job.published_at = datetime.now(UTC)
+
+
+@app.task(name="clipforge.cleanup.project")
+def cleanup_project(project_id: str) -> None:
+    """Delete a deleted project's scratch files, plus any other folder whose project no longer exists
+    (e.g. a pipeline step that was still running when the project was deleted)."""
+    cleanup_project_dir(project_id)
+    with session_scope() as session:
+        existing = {str(pid) for pid in session.scalars(select(VideoProject.id))}
+    for path in orphan_work_dirs(Path(get_settings().work_dir), existing):
+        log.info("Removing leftover work folder %s", path.name)
+        shutil.rmtree(path, ignore_errors=True)

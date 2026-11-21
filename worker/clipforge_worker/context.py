@@ -80,3 +80,19 @@ def project_dir(project_id: uuid.UUID | str) -> Path:
 
 def cleanup_project_dir(project_id: uuid.UUID | str) -> None:
     shutil.rmtree(Path(get_settings().work_dir) / str(project_id), ignore_errors=True)
+
+
+def orphan_work_dirs(work_dir: Path, existing_project_ids: set[str]) -> list[Path]:
+    """Project folders left behind by deleted projects. Only folders named like a project id count,
+    so anything else kept in the work volume (e.g. manual test files) is never touched."""
+    if not work_dir.is_dir():
+        return []
+    orphans = []
+    for path in work_dir.iterdir():
+        try:
+            pid = str(uuid.UUID(path.name))
+        except ValueError:
+            continue
+        if path.is_dir() and pid not in existing_project_ids:
+            orphans.append(path)
+    return orphans

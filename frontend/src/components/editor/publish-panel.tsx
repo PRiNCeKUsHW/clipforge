@@ -96,6 +96,15 @@ export function PublishPanel({ clip }: { clip: ClipDetail }) {
     <div className="flex flex-col gap-5">
       <div className="grid gap-2">
         <Label>Account</Label>
+        {accounts.isPending && <p className="text-sm text-muted-foreground">Loading connected accounts…</p>}
+        {accounts.isError && (
+          <p className="text-sm text-destructive">
+            Couldn&apos;t load your connected accounts ({accounts.error.message}).{" "}
+            <button type="button" className="underline underline-offset-4" onClick={() => accounts.refetch()}>
+              Try again
+            </button>
+          </p>
+        )}
         <div className="flex flex-wrap gap-2">
           {accounts.data?.map((a) => (
             <button
