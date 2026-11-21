@@ -1,0 +1,20 @@
+# Optional NVIDIA GPU override for transcription. Requires Docker Desktop (WSL2 backend)
+# plus an NVIDIA driver with WSL support (see README "GPU (optional)").
+#
+#   docker compose -f docker-compose.yml -f docker-compose.gpu.yml up --build
+#
+# With WHISPER_DEVICE=auto the worker detects the GPU and switches to
+# large-v3-turbo / float16 automatically.
+
+services:
+  worker-transcribe:
+    build:
+      args:
+        WHISPER_GPU: "true"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

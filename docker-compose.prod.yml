@@ -1,0 +1,120 @@
+# Production stack for a single server (VPS). See docs/DEPLOYMENT.md.
+#
+#   cp .env.example .env.prod   # fill in production values (R2, domains, secrets)
+#   docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
+#
+# Differences from the dev stack: no source bind mounts, no auto-reload, Cloudflare R2 instead of
+# local S3, Caddy in front with automatic HTTPS, and the production Next.js build.
+
+x-app: &app
+  env_file: .env.prod
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options: { max-size: "20m", max-file: "5" }
+
+services:
+  postgres:
+    <<: *app
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      retries: 20
+
+  redis:
+    <<: *app
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 20
+
+  backend:
+    <<: *app
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    command: >
+      sh -c "alembic upgrade head &&
+      uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 2 --proxy-headers --forwarded-allow-ips='*'"
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+  worker:
+    <<: *app
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    command: celery -A clipforge_worker.celery_app worker -Q default,render -c 2 -n default@%h --loglevel=INFO
+    volumes:
+      - workdata:/data/work
+      - models:/models
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+  worker-transcribe:
+    <<: *app
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+      args:
+        # set to "true" on a GPU server (and add the deploy.resources block from docker-compose.gpu.yml)
+        WHISPER_GPU: ${WHISPER_GPU:-false}
+    command: celery -A clipforge_worker.celery_app worker -Q transcribe -c 1 -n transcribe@%h --loglevel=INFO
+    volumes:
+      - workdata:/data/work
+      - models:/models
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+  renderer:
+    <<: *app
+    build:
+      context: ./renderer
+    volumes:
+      - workdata:/data/work
+
+  frontend:
+    <<: *app
+    build:
+      context: ./frontend
+      target: prod
+      args:
+        NEXT_PUBLIC_API_URL: https://${API_DOMAIN}
+
+  # Reverse proxy with automatic Let's Encrypt certificates.
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN}
+      API_DOMAIN: ${API_DOMAIN}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddydata:/data
+    depends_on:
+      - frontend
+      - backend
+
+volumes:
+  pgdata:
+  redisdata:
+  workdata:
+  models:
+  caddydata:

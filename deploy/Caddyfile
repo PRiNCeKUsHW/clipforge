@@ -1,0 +1,18 @@
+# Caddy obtains and renews HTTPS certificates automatically for both domains.
+# Point DNS A/AAAA records for APP_DOMAIN and API_DOMAIN at this server first.
+
+{$APP_DOMAIN} {
+	encode zstd gzip
+	reverse_proxy frontend:3000
+}
+
+{$API_DOMAIN} {
+	# Uploads go straight to R2 with presigned URLs, so request bodies here stay small.
+	request_body {
+		max_size 10MB
+	}
+	reverse_proxy backend:8000 {
+		# Stream Server-Sent Events (live progress) immediately instead of buffering.
+		flush_interval -1
+	}
+}

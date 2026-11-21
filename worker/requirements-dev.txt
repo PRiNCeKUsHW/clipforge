@@ -1,0 +1,9 @@
+# Core-logic tests don't need the heavy ML/download packages: Whisper and Gemini are mocked.
+pydantic>=2.9,<3
+pydantic-settings>=2.6
+sqlalchemy>=2.0.36,<2.1
+boto3>=1.35
+pytest>=8.3
+httpx>=0.27
+cryptography>=43
+numpy>=1.26

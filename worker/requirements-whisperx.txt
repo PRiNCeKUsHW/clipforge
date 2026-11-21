@@ -1,0 +1,3 @@
+# Optional: tighter word alignment (ALIGN_WORDS) and speaker diarization (DIARIZE).
+# Pulls in PyTorch (~2-3 GB). Installed only when building with INSTALL_WHISPERX=true.
+whisperx>=3.4

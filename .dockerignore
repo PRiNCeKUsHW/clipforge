@@ -1,0 +1,11 @@
+# Build context for backend/ and worker/ images is the repo root.
+.git
+.venv
+**/__pycache__
+**/.pytest_cache
+**/node_modules
+frontend
+renderer/node_modules
+.env
+*.mp4
+*.wav

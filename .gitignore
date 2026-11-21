@@ -1,0 +1,45 @@
+# Secrets
+.env
+.dev-credentials.txt
+*.pem
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.coverage
+htmlcov/
+
+# Node
+node_modules/
+.next/
+out/
+dist/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# Media / scratch
+*.mp4
+*.mov
+*.mkv
+*.wav
+work/
+.data/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+.env.prod
+
+# Local tooling
+.claude/
+*.log
