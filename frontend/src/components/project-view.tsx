@@ -16,6 +16,7 @@ import { api } from "@/lib/api";
 import { formatDuration } from "@/lib/format";
 import { TERMINAL_STATUSES } from "@/lib/types";
 import { useProjectEvents } from "@/lib/use-project-events";
+import { cn } from "@/lib/utils";
 
 export function ProjectView() {
   const { id } = useParams<{ id: string }>();
@@ -74,7 +75,7 @@ export function ProjectView() {
         </Link>
         <div className="flex flex-wrap items-start gap-3">
           <div className="min-w-0 flex-1">
-            <h1 className="text-2xl font-semibold tracking-tight text-balance">
+            <h1 className="text-3xl leading-tight font-extrabold text-balance sm:text-4xl">
               {p.title || (p.source_type === "youtube" ? "YouTube video" : "Uploaded video")}
             </h1>
             <p className="mt-1 flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground [&>*+*]:before:mr-2 [&>*+*]:before:content-['·']">
@@ -107,12 +108,12 @@ export function ProjectView() {
       {p.status === "ready" && (
         <section className="flex flex-col gap-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-lg font-semibold">
+            <h2 className="text-2xl font-bold">
               {clips.data ? `${clips.data.length} clips` : "Clips"}{" "}
               <span className="text-sm font-normal text-muted-foreground">sorted by virality score</span>
             </h2>
             {clips.data && clips.data.some((c) => c.video_url) && (
-              <a href={api.zipUrl(id)} className={buttonVariants({ variant: "outline", size: "sm" })}>
+              <a href={api.zipUrl(id)} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "rounded-full")}>
                 <Archive /> Download all (.zip)
               </a>
             )}
@@ -120,7 +121,7 @@ export function ProjectView() {
           {clips.isPending ? (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {[0, 1, 2, 3].map((i) => (
-                <Skeleton key={i} className="aspect-[9/16] w-full" />
+                <Skeleton key={i} className="aspect-[9/16] w-full rounded-[1.6rem]" />
               ))}
             </div>
           ) : clips.error ? (
@@ -128,7 +129,7 @@ export function ProjectView() {
               <AlertDescription>{clips.error.message}</AlertDescription>
             </Alert>
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {clips.data.map((clip, i) => (
                 <ClipCard key={clip.id} clip={clip} rank={i + 1} />
               ))}

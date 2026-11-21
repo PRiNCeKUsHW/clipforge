@@ -5,19 +5,21 @@ import { SubmitForm } from "@/components/submit-form";
 export default function HomePage() {
   return (
     <RequireAuth>
-      <div className="mx-auto flex w-full max-w-2xl flex-col gap-10">
-        <section className="flex flex-col gap-4">
-          <div>
-            <h1 className="text-3xl font-semibold tracking-tight">Long video in. Viral shorts out.</h1>
-            <p className="mt-2 text-muted-foreground">
-              Paste a YouTube link or upload a file. ClipForge transcribes it locally, asks Gemini for the strongest
-              moments, and cuts scored clips you can download.
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-14">
+        <section className="hero-glow flex flex-col gap-7">
+          <div className="flex flex-col gap-4 pt-4">
+            <h1 className="max-w-[16ch] text-[2.6rem] leading-[1.02] font-extrabold sm:text-6xl">
+              One long video in, a week of Shorts out.
+            </h1>
+            <p className="max-w-[58ch] text-base leading-relaxed text-muted-foreground sm:text-lg">
+              Paste a YouTube link or drop in a file. ClipForge finds the funniest, sharpest moments, frames them
+              for vertical, and scores each clip so you know what to post first.
             </p>
           </div>
           <SubmitForm />
         </section>
-        <section className="flex flex-col gap-3">
-          <h2 className="text-lg font-semibold">Your projects</h2>
+        <section className="flex flex-col gap-4">
+          <h2 className="text-2xl font-bold">Your projects</h2>
           <ProjectList />
         </section>
       </div>

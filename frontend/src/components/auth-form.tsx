@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LogoMark } from "@/components/app-header";
 import { api } from "@/lib/api";
 
 export function AuthForm({ mode }: { mode: "login" | "register" }) {
@@ -39,24 +40,26 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center px-4 py-16">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle className="text-xl">{isLogin ? "Welcome back" : "Create your account"}</CardTitle>
+    <div className="hero-glow flex flex-1 flex-col items-center justify-center gap-6 px-4 py-16">
+      <LogoMark className="size-14" />
+      <Card className="w-full max-w-sm rounded-[1.75rem] border-border/70 py-7 shadow-[0_30px_70px_-34px_oklch(0.45_0.12_40/0.45)]">
+        <CardHeader className="px-7">
+          <CardTitle className="font-heading text-3xl font-extrabold tracking-tight">{isLogin ? "Welcome back" : "Create your account"}</CardTitle>
           <CardDescription>
-            {isLogin ? "Log in to turn long videos into shorts." : "Free, local, and yours. No credit card."}
+            {isLogin ? "Log in to turn long videos into Shorts." : "Runs on your own computer. Free, no card needed."}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-7">
           <form onSubmit={onSubmit} className="flex flex-col gap-4">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Input className="h-11 rounded-xl" id="email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
+                className="h-11 rounded-xl"
                 type="password"
                 autoComplete={isLogin ? "current-password" : "new-password"}
                 minLength={8}
@@ -71,7 +74,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
-            <Button type="submit" size="lg" disabled={busy}>
+            <Button type="submit" size="lg" className="h-12 rounded-full text-base font-semibold" disabled={busy}>
               {busy && <Loader2 className="animate-spin" />}
               {isLogin ? "Log in" : "Sign up"}
             </Button>

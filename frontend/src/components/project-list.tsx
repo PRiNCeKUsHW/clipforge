@@ -23,14 +23,14 @@ export function ProjectList() {
     return (
       <div className="grid gap-2">
         {[0, 1, 2].map((i) => (
-          <Skeleton key={i} className="h-16 w-full" />
+          <Skeleton key={i} className="h-[4.5rem] w-full rounded-2xl" />
         ))}
       </div>
     );
   }
   if (error) return <p className="text-sm text-destructive">{error.message}</p>;
   if (data.length === 0) {
-    return <p className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground">No projects yet. Paste a link above to get started.</p>;
+    return <p className="rounded-2xl border-2 border-dashed border-border p-10 text-center text-sm text-muted-foreground">No projects yet. Paste a link above and your clips will show up here.</p>;
   }
 
   return (
@@ -41,15 +41,13 @@ export function ProjectList() {
           <li key={p.id}>
             <Link
               href={`/projects/${p.id}`}
-              className="flex items-center gap-4 rounded-lg border border-border bg-card px-4 py-3 transition-colors hover:border-primary/50"
+              className="group flex items-center gap-4 rounded-2xl border border-border/70 bg-card px-4 py-3.5 transition-colors hover:border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
             >
-              {p.source_type === "youtube" ? (
-                <MonitorPlay className="size-5 shrink-0 text-muted-foreground" />
-              ) : (
-                <Film className="size-5 shrink-0 text-muted-foreground" />
-              )}
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-secondary text-secondary-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                {p.source_type === "youtube" ? <MonitorPlay className="size-5" /> : <Film className="size-5" />}
+              </span>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium">{p.title || p.source_url || "Untitled video"}</p>
+                <p className="truncate font-medium">{p.title || p.source_url || "Untitled video"}</p>
                 <p className="text-xs text-muted-foreground">
                   {new Date(p.created_at).toLocaleString()} · {formatDuration(p.duration)}
                   {p.status === "ready" && ` · ${p.clip_count} clips`}

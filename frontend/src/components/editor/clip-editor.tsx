@@ -88,10 +88,10 @@ export function ClipEditor() {
           <ArrowLeft className="size-4" /> {c.project_title || "Back to project"}
         </Link>
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-2xl font-semibold tracking-tight">{c.hook_title}</h1>
-          <Badge variant="secondary">Score {c.virality_score}</Badge>
-          <Badge variant="outline">{layoutLabel(c.layout)}</Badge>
-          {!captionsOn(c.caption_style) && <Badge variant="outline">No captions</Badge>}
+          <h1 className="text-3xl leading-tight font-extrabold">{c.hook_title}</h1>
+          <Badge className="rounded-full bg-rose px-2.5 text-white">Score {c.virality_score}</Badge>
+          <Badge variant="outline" className="rounded-full">{layoutLabel(c.layout)}</Badge>
+          {!captionsOn(c.caption_style) && <Badge variant="outline" className="rounded-full">No captions</Badge>}
         </div>
         <p className="text-sm text-muted-foreground">
           {formatDuration(c.start)} – {formatDuration(c.end)} in source · {c.duration.toFixed(1)}s
@@ -112,7 +112,7 @@ export function ClipEditor() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,340px)_1fr]">
         {/* Preview */}
         <div className="flex flex-col gap-3">
-          <div className="relative mx-auto aspect-[9/16] w-full max-w-[340px] overflow-hidden rounded-xl bg-black">
+          <div className="relative mx-auto aspect-[9/16] w-full max-w-[340px] overflow-hidden rounded-[1.4rem] bg-[#170b1a] ring-1 ring-white/10">
             {c.video_url && !rendering ? (
               <video key={c.updated_at} src={c.video_url} poster={c.thumbnail_url ?? undefined} controls playsInline className="size-full object-contain" />
             ) : (
@@ -134,20 +134,20 @@ export function ClipEditor() {
             )}
           </div>
           <div className="mx-auto flex w-full max-w-[340px] gap-2">
-            <Button className="flex-1" onClick={() => render.mutate()} disabled={rendering || render.isPending}>
+            <Button className="flex-1 rounded-full font-semibold" onClick={() => render.mutate()} disabled={rendering || render.isPending}>
               {rendering || render.isPending ? <Loader2 className="animate-spin" /> : <RefreshCw />} Re-render
             </Button>
-            <Button variant="outline" onClick={download} disabled={!c.video_url || rendering}>
+            <Button variant="outline" className="rounded-full" onClick={download} disabled={!c.video_url || rendering}>
               <Download /> MP4
             </Button>
           </div>
         </div>
 
         {/* Controls */}
-        <Card>
+        <Card className="rounded-[1.6rem] border-border/60">
           <CardContent>
             <Tabs defaultValue="layout">
-              <TabsList>
+              <TabsList className="rounded-full p-1">
                 <TabsTrigger value="layout">Layout</TabsTrigger>
                 <TabsTrigger value="captions">Captions</TabsTrigger>
                 <TabsTrigger value="trim">Trim</TabsTrigger>

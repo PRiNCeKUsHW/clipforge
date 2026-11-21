@@ -13,10 +13,10 @@ import type { Clip, ScoreBreakdown } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const TONE_CLASSES: Record<ScoreTone, string> = {
-  great: "bg-emerald-500 text-emerald-950",
-  good: "bg-lime-400 text-lime-950",
-  ok: "bg-amber-400 text-amber-950",
-  low: "bg-zinc-500 text-zinc-50",
+  great: "bg-rose text-white",
+  good: "bg-marigold text-plum",
+  ok: "bg-[color-mix(in_oklch,var(--marigold)_35%,transparent)] text-foreground",
+  low: "bg-muted text-muted-foreground",
 };
 
 const BREAKDOWN: { key: keyof ScoreBreakdown; label: string }[] = [
@@ -43,8 +43,8 @@ export function ClipCard({ clip, rank }: { clip: Clip; rank: number }) {
   }
 
   return (
-    <Card className="gap-0 py-0">
-      <div className="relative aspect-[9/16] bg-black">
+    <Card className="gap-0 overflow-hidden rounded-[1.6rem] border-border/60 py-0">
+      <div className="relative m-2 mb-0 aspect-[9/16] overflow-hidden rounded-[1.2rem] bg-[#170b1a]">
         {clip.video_url && clip.status !== "rendering" ? (
           <video
             src={clip.video_url}
@@ -67,10 +67,10 @@ export function ClipCard({ clip, rank }: { clip: Clip; rank: number }) {
             )}
           </div>
         )}
-        <span className="pointer-events-none absolute top-2 left-2 rounded bg-black/70 px-1.5 py-0.5 text-xs font-medium text-white">
+        <span className="pointer-events-none absolute top-2.5 left-2.5 rounded-full bg-black/55 px-2 py-0.5 text-xs font-semibold text-white backdrop-blur">
           #{rank}
         </span>
-        <span className="pointer-events-none absolute top-2 right-2 rounded bg-black/70 px-1.5 py-0.5 text-xs tabular-nums text-white">
+        <span className="pointer-events-none absolute top-2.5 right-2.5 rounded-full bg-black/55 px-2 py-0.5 text-xs tabular-nums text-white backdrop-blur">
           {formatDuration(clip.duration)}
         </span>
       </div>
@@ -78,13 +78,13 @@ export function ClipCard({ clip, rank }: { clip: Clip; rank: number }) {
       <CardContent className="flex flex-1 flex-col gap-3 py-4">
         <div className="flex items-start gap-3">
           <div
-            className={cn("grid size-11 shrink-0 place-items-center rounded-lg text-lg font-bold tabular-nums", TONE_CLASSES[scoreTone(clip.virality_score)])}
+            className={cn("grid size-12 shrink-0 place-items-center rounded-2xl font-heading text-xl font-extrabold tabular-nums", TONE_CLASSES[scoreTone(clip.virality_score)])}
             title="Virality score (0-100)"
           >
             {clip.virality_score}
           </div>
           <div className="min-w-0">
-            <h3 className="leading-snug font-semibold">{clip.hook_title}</h3>
+            <h3 className="text-[1.05rem] leading-snug font-semibold">{clip.hook_title}</h3>
             <p className="text-xs text-muted-foreground">
               {formatDuration(clip.start)} – {formatDuration(clip.end)} in source
             </p>
@@ -107,16 +107,16 @@ export function ClipCard({ clip, rank }: { clip: Clip; rank: number }) {
 
         {clip.reason && <p className="text-sm text-muted-foreground">{clip.reason}</p>}
         {clip.transcript_text && (
-          <p className="line-clamp-3 border-l-2 border-border pl-3 text-xs text-muted-foreground italic">
+          <p className="line-clamp-3 border-l-2 border-primary/60 pl-3 text-xs text-muted-foreground italic">
             “{clip.transcript_text}”
           </p>
         )}
 
         <div className="mt-auto flex gap-2 pt-1">
-          <Link href={`/clips/${clip.id}`} className={cn(buttonVariants({ variant: "default" }), "flex-1")}>
+          <Link href={`/clips/${clip.id}`} className={cn(buttonVariants({ variant: "default" }), "flex-1 rounded-full font-semibold")}>
             <Pencil /> Edit
           </Link>
-          <Button variant="outline" onClick={download} disabled={!clip.video_url || downloading} aria-label="Download MP4">
+          <Button variant="outline" className="rounded-full" onClick={download} disabled={!clip.video_url || downloading} aria-label="Download MP4">
             {downloading ? <Loader2 className="animate-spin" /> : <Download />}
           </Button>
         </div>

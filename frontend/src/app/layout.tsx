@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bangers, Geist, Geist_Mono, Inter, Montserrat } from "next/font/google";
+import { Bangers, Bricolage_Grotesque, Geist_Mono, Instrument_Sans, Inter, Montserrat, Mukta } from "next/font/google";
 import { Suspense } from "react";
 
 import { AppHeader } from "@/components/app-header";
@@ -8,7 +8,10 @@ import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
 
-const geistSans = Geist({ variable: "--font-sans", subsets: ["latin"] });
+const display = Bricolage_Grotesque({ variable: "--font-display", subsets: ["latin"] });
+const body = Instrument_Sans({ variable: "--font-body", subsets: ["latin"] });
+// Hindi titles and transcripts
+const deva = Mukta({ variable: "--font-deva", weight: ["400", "500", "600", "700"], subsets: ["devanagari", "latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 // Caption preview fonts (the same faces the renderer bundles)
 const montserrat = Montserrat({ variable: "--font-montserrat", weight: ["800", "900"], subsets: ["latin"] });
@@ -22,14 +25,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${montserrat.variable} ${inter.variable} ${bangers.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="en" className={`${display.variable} ${body.variable} ${deva.variable} ${geistMono.variable} ${montserrat.variable} ${inter.variable} ${bangers.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="flex min-h-full flex-col">
         <Providers>
           {/* The header reads the current path; on dynamic routes that needs a Suspense boundary */}
-          <Suspense fallback={<div className="h-14 border-b border-border/60" />}>
+          <Suspense fallback={<div className="h-16" />}>
             <AppHeader />
           </Suspense>
-          <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-8">{children}</main>
+          <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 pt-6 pb-16 sm:pt-10">{children}</main>
           <Toaster richColors position="bottom-right" />
         </Providers>
       </body>

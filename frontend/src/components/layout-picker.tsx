@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 const Face = ({ cx, cy, r = 11, tone = "#f4b98a" }: { cx: number; cy: number; r?: number; tone?: string }) => (
   <g>
     <circle cx={cx} cy={cy} r={r} fill={tone} />
-    <path d={`M${cx - r * 1.6} ${cy + r * 3.2} Q${cx} ${cy + r * 0.9} ${cx + r * 1.6} ${cy + r * 3.2} Z`} fill="#4f6b8f" />
+    <path d={`M${cx - r * 1.6} ${cy + r * 3.2} Q${cx} ${cy + r * 0.9} ${cx + r * 1.6} ${cy + r * 3.2} Z`} fill="#b4567a" />
   </g>
 );
 const Caption = ({ y, w = 54 }: { y: number; w?: number }) => (
@@ -21,8 +21,8 @@ const Caption = ({ y, w = 54 }: { y: number; w?: number }) => (
 );
 const Band = ({ y, h = 50 }: { y: number; h?: number }) => (
   <g>
-    <rect x={0} y={y} width={90} height={h} fill="#2b3a52" />
-    <rect x={0} y={y + h * 0.62} width={90} height={h * 0.38} fill="#3c5170" />
+    <rect x={0} y={y} width={90} height={h} fill="#4a2b4f" />
+    <rect x={0} y={y + h * 0.62} width={90} height={h * 0.38} fill="#5e3a5f" />
     <Face cx={34} cy={y + h * 0.42} r={7} />
     <Face cx={58} cy={y + h * 0.45} r={6} tone="#d99a6c" />
   </g>
@@ -33,28 +33,28 @@ function Preview({ id }: { id: LayoutId }) {
     <svg viewBox="0 0 90 160" className="h-full w-full" aria-hidden>
       <defs>
         <linearGradient id={`bg-${id}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#3a2f5c" />
-          <stop offset="1" stopColor="#1d2b3f" />
+          <stop offset="0" stopColor="#6a3358" />
+          <stop offset="1" stopColor="#2a1530" />
         </linearGradient>
       </defs>
       {id === "auto" && (
         <>
-          <rect width={90} height={160} fill="#24344d" />
+          <rect width={90} height={160} fill="#3d2442" />
           <Face cx={45} cy={62} r={16} />
           <Caption y={118} />
         </>
       )}
       {id === "single" && (
         <>
-          <rect width={90} height={160} fill="#24344d" />
+          <rect width={90} height={160} fill="#3d2442" />
           <Face cx={45} cy={58} r={18} />
           <Caption y={118} />
         </>
       )}
       {id === "podcast_split" && (
         <>
-          <rect width={90} height={80} fill="#24344d" />
-          <rect y={80} width={90} height={80} fill="#2d3f5c" />
+          <rect width={90} height={80} fill="#3d2442" />
+          <rect y={80} width={90} height={80} fill="#4d2e50" />
           <Face cx={45} cy={30} r={12} />
           <Face cx={45} cy={110} r={12} tone="#d99a6c" />
           <rect y={79} width={90} height={2} fill="#000" />
@@ -92,14 +92,14 @@ export function LayoutPicker({ value, onChange, compact = false }: { value: stri
           aria-pressed={value === l.id}
           title={l.hint}
           className={cn(
-            "flex flex-col gap-2 rounded-lg border p-2 text-left transition-colors",
-            value === l.id ? "border-primary bg-primary/10" : "border-border hover:border-primary/50",
+            "flex flex-col gap-2 rounded-2xl border-2 p-2 text-left transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+            value === l.id ? "border-primary bg-primary/10" : "border-transparent bg-card/60 hover:border-primary/40",
           )}
         >
-          <div className="relative mx-auto aspect-[9/16] w-full max-w-[96px] overflow-hidden rounded-md ring-1 ring-white/10">
+          <div className="relative mx-auto aspect-[9/16] w-full max-w-[96px] overflow-hidden rounded-xl ring-1 ring-white/10">
             <Preview id={l.id} />
             {l.id === "auto" && (
-              <span className="absolute top-1 right-1 rounded bg-primary px-1 text-[9px] font-semibold text-primary-foreground">
+              <span className="absolute top-1 right-1 rounded-full bg-primary px-1.5 text-[9px] font-semibold text-primary-foreground">
                 <Sparkles className="inline size-2.5" /> AI
               </span>
             )}
@@ -117,7 +117,7 @@ export function LayoutPicker({ value, onChange, compact = false }: { value: stri
 
 export function CaptionsToggle({ on, onChange }: { on: boolean; onChange: (on: boolean) => void }) {
   return (
-    <div className="inline-flex rounded-lg border border-border p-0.5" role="radiogroup" aria-label="Captions">
+    <div className="inline-flex rounded-full bg-card/70 p-1" role="radiogroup" aria-label="Captions">
       {[
         { v: true, label: "Captions on" },
         { v: false, label: "No captions" },
@@ -129,7 +129,7 @@ export function CaptionsToggle({ on, onChange }: { on: boolean; onChange: (on: b
           aria-checked={on === o.v}
           onClick={() => onChange(o.v)}
           className={cn(
-            "rounded-md px-3 py-1 text-sm transition-colors",
+            "rounded-full px-3.5 py-1 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
             on === o.v ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground",
           )}
         >

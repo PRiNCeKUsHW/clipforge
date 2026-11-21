@@ -91,15 +91,15 @@ export function SubmitForm() {
   }
 
   return (
-    <Card>
-      <CardContent>
+    <Card className="rounded-[1.75rem] border-border/70 bg-card/95 py-5 shadow-[0_30px_70px_-34px_oklch(0.45_0.12_40/0.45)] sm:py-6">
+      <CardContent className="sm:px-7">
         <form onSubmit={onSubmit} className="flex flex-col gap-5">
           <Tabs value={tab} onValueChange={(v) => setTab(v as "link" | "upload")}>
-            <TabsList>
-              <TabsTrigger value="link">
+            <TabsList className="rounded-full p-1">
+              <TabsTrigger value="link" className="rounded-full px-3">
                 <Link2 /> YouTube link
               </TabsTrigger>
-              <TabsTrigger value="upload">
+              <TabsTrigger value="upload" className="rounded-full px-3">
                 <Upload /> Upload file
               </TabsTrigger>
             </TabsList>
@@ -114,7 +114,7 @@ export function SubmitForm() {
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 aria-invalid={urlInvalid}
-                className="h-11 text-base"
+                className="h-13 rounded-2xl bg-background px-4 text-base md:text-base"
                 autoFocus
               />
               {urlInvalid && <p className="mt-2 text-sm text-destructive">Paste a YouTube video link (watch, youtu.be or shorts).</p>}
@@ -151,7 +151,7 @@ export function SubmitForm() {
                   }}
                   onDragLeave={() => setDragging(false)}
                   onDrop={onDrop}
-                  className={`flex w-full flex-col items-center gap-2 rounded-lg border border-dashed px-4 py-10 text-sm text-muted-foreground transition-colors hover:border-primary/60 hover:text-foreground ${dragging ? "border-primary bg-primary/5 text-foreground" : "border-border"}`}
+                  className={`flex w-full flex-col items-center gap-2 rounded-2xl border-2 border-dashed bg-background px-4 py-10 text-sm text-muted-foreground transition-colors hover:border-primary/60 hover:text-foreground ${dragging ? "border-primary bg-primary/5 text-foreground" : "border-border"}`}
                 >
                   <Upload className="size-6" />
                   <span>
@@ -189,7 +189,7 @@ export function SubmitForm() {
                   key={ex}
                   type="button"
                   onClick={() => setInstruction(ex)}
-                  className="rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground transition-colors hover:border-primary/60 hover:text-foreground"
+                  className="rounded-full bg-secondary px-3 py-1 text-xs text-secondary-foreground transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 >
                   {ex}
                 </button>
@@ -197,7 +197,7 @@ export function SubmitForm() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 rounded-lg border border-border p-3">
+          <div className="flex flex-col gap-3 rounded-2xl bg-secondary/60 p-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <Label className="flex items-center gap-1.5">
                 <LayoutTemplate className="size-3.5 text-primary" /> Clip style
@@ -224,7 +224,7 @@ export function SubmitForm() {
             </Alert>
           )}
 
-          <Button type="submit" size="lg" className="h-11 text-base" disabled={!canSubmit}>
+          <Button type="submit" size="lg" className="h-13 rounded-full text-base font-semibold shadow-[0_10px_24px_-12px_oklch(0.6_0.15_55/0.8)]" disabled={!canSubmit}>
             {busy ? <Loader2 className="animate-spin" /> : <Sparkles />}
             {busy ? (uploadProgress !== null && uploadProgress < 1 ? "Uploading…" : "Starting…") : "Generate clips"}
           </Button>
