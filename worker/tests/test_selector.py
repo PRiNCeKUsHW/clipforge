@@ -125,3 +125,21 @@ def test_caps_number_of_clips():
     result = select_highlights(t, FakeLLM(json.dumps(proposals)), HighlightOptions(max_clips=10))
     assert len(result) == 10
     assert result[0].virality_score == 64
+
+
+def test_exact_clip_count_and_length_reach_the_prompt():
+    t = sentence_transcript(400)
+    proposals = [clip(i * 100 + 0.1, i * 100 + 90, 50 + i) for i in range(6)]
+    llm = FakeLLM(json.dumps(proposals))
+    result = select_highlights(t, llm, HighlightOptions(min_seconds=30, max_seconds=120, min_clips=3, max_clips=3))
+    assert "pick the 3 best self-contained clips, each 30-120 seconds long" in llm.prompts[0]
+    assert len(result) == 3
+    assert all(c.end - c.start > 60 for c in result)  # long clips are not cut down to the 59 s default
+
+
+def test_one_clip_on_a_long_video_keeps_each_window_asking_for_one():
+    t = sentence_transcript(1000)  # 5000s -> several windows
+    llm = FakeLLM(lambda prompt: json.dumps([clip(1500, 1530, 70)]))
+    result = select_highlights(t, llm, HighlightOptions(min_clips=1, max_clips=1))
+    assert all("pick the 1 best" in p for p in llm.prompts)
+    assert len(result) == 1

@@ -12,6 +12,11 @@ CAPTION_STYLES = ("bold", "karaoke", "minimal", "beast", "none")
 # centered_title: whole 16:9 frame in the middle on a blurred background, clip title above
 # blur_fit: whole 16:9 frame in the middle on a blurred background, no title
 LAYOUTS = ("auto", "podcast_split", "single", "centered_title", "blur_fit")
+# Length range Gemini aims for when finding clips, as (min, max) seconds.
+# "auto" means the worker's own default (20-59 s, see worker config).
+CLIP_LENGTHS: dict[str, tuple[float, float] | None] = {"auto": None, "1m": (15.0, 60.0), "2m": (30.0, 120.0)}
+# How many clips a user may ask for; None (not set) lets Gemini decide (5-10).
+TARGET_CLIPS_RANGE = (1, 10)
 MIN_CLIP_SECONDS = 3.0
 MAX_CLIP_SECONDS = 180.0
 

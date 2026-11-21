@@ -29,6 +29,10 @@ class VideoProject(Base, TimestampMixin):
     # Defaults applied to every clip found in this project (each clip can still be changed later)
     layout: Mapped[str] = mapped_column(String(32), default="auto", server_default="auto")
     caption_style: Mapped[str] = mapped_column(String(32), default="bold", server_default="bold")
+    # How long each clip should be ("auto", "1m", "2m"; see services.editing.CLIP_LENGTHS)
+    clip_length: Mapped[str] = mapped_column(String(16), default="auto", server_default="auto")
+    # How many clips the user wants (1-10); None lets Gemini decide
+    target_clips: Mapped[int | None] = mapped_column(Integer)
 
     status: Mapped[ProjectStatus] = mapped_column(
         str_enum(ProjectStatus), default=ProjectStatus.queued, server_default=ProjectStatus.queued.value, index=True

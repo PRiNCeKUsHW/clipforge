@@ -26,11 +26,12 @@ def build_prompt(
     has_speakers: bool = False,
     has_frames: bool = False,
 ) -> str:
+    how_many = f"the {max_clips} best" if min_clips == max_clips else f"{min_clips}-{max_clips}"
     parts = [
         "You are an expert short-form video editor who finds the moments in long videos that perform "
         "best as YouTube Shorts / Instagram Reels / TikToks.",
         "",
-        f"From the timestamped transcript below, pick {min_clips}-{max_clips} self-contained clips, "
+        f"From the timestamped transcript below, pick {how_many} self-contained clips, "
         f"each {min_seconds:.0f}-{max_seconds:.0f} seconds long. Fewer is fine if the content is thin; "
         "never invent moments that aren't in the transcript.",
         "",

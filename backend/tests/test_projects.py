@@ -241,3 +241,17 @@ async def test_project_layout_and_caption_defaults(client, auth):
     assert (default["layout"], default["caption_style"]) == ("auto", "bold")
     bad = await client.post("/api/projects", headers=auth, json={"source_type": "youtube", "source_url": YT, "layout": "x"})
     assert bad.status_code == 422
+
+
+async def test_project_clip_length_and_count(client, auth):
+    r = await client.post(
+        "/api/projects", headers=auth,
+        json={"source_type": "youtube", "source_url": YT, "clip_length": "2m", "target_clips": 3},
+    )  # fmt: skip
+    assert r.status_code == 201
+    assert (r.json()["clip_length"], r.json()["target_clips"]) == ("2m", 3)
+    default = (await client.post("/api/projects", headers=auth, json={"source_type": "youtube", "source_url": YT})).json()
+    assert (default["clip_length"], default["target_clips"]) == ("auto", None)
+    for bad in ({"clip_length": "5m"}, {"target_clips": 0}, {"target_clips": 11}):
+        r = await client.post("/api/projects", headers=auth, json={"source_type": "youtube", "source_url": YT, **bad})
+        assert r.status_code == 422, bad

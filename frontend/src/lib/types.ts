@@ -26,6 +26,10 @@ export interface Project {
   instruction: string | null;
   layout: string;
   caption_style: string;
+  /** "auto" | "1m" | "2m" */
+  clip_length: string;
+  /** clips the user asked for; null = AI decides */
+  target_clips: number | null;
   status: ProjectStatus;
   progress: number;
   status_message: string | null;

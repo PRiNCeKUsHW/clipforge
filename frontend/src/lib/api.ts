@@ -65,6 +65,8 @@ export const api = {
     instruction?: string;
     layout?: string;
     caption_style?: string;
+    clip_length?: string;
+    target_clips?: number | null;
   }) => request<Project>("/api/projects", { method: "POST", body: JSON.stringify(body) }),
   retryProject: (id: string) => request<Project>(`/api/projects/${id}/retry`, { method: "POST" }),
   deleteProject: (id: string) => request<void>(`/api/projects/${id}`, { method: "DELETE" }),

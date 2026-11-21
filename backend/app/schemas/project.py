@@ -4,7 +4,7 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.models.enums import ProjectStatus, SourceType
-from app.services.editing import CAPTION_STYLES, LAYOUTS
+from app.services.editing import CAPTION_STYLES, CLIP_LENGTHS, LAYOUTS, TARGET_CLIPS_RANGE
 from app.services.youtube import is_youtube_url
 
 
@@ -17,6 +17,9 @@ class ProjectCreate(BaseModel):
     # Defaults for every clip found in this project
     layout: str = "auto"
     caption_style: str = "bold"
+    clip_length: str = "auto"
+    # None = let Gemini decide how many clips
+    target_clips: int | None = Field(default=None, ge=TARGET_CLIPS_RANGE[0], le=TARGET_CLIPS_RANGE[1])
 
     @model_validator(mode="after")
     def _check_source(self) -> "ProjectCreate":
@@ -32,6 +35,8 @@ class ProjectCreate(BaseModel):
             raise ValueError(f"Unknown layout {self.layout!r}")
         if self.caption_style not in CAPTION_STYLES:
             raise ValueError(f"Unknown caption style {self.caption_style!r}")
+        if self.clip_length not in CLIP_LENGTHS:
+            raise ValueError(f"Unknown clip length {self.clip_length!r}")
         if self.instruction is not None:
             self.instruction = self.instruction.strip() or None
         if self.title is not None:
@@ -50,6 +55,8 @@ class ProjectRead(BaseModel):
     instruction: str | None
     layout: str
     caption_style: str
+    clip_length: str = "auto"
+    target_clips: int | None = None
     status: ProjectStatus
     progress: int
     status_message: str | None

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState, type DragEvent, type FormEvent } from "react";
 import { toast } from "sonner";
 
+import { ClipOptions, type ClipLengthId } from "@/components/clip-options";
 import { CAPTION_STYLES, StylePicker } from "@/components/editor/style-picker";
 import { CaptionsToggle, LayoutPicker } from "@/components/layout-picker";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -46,6 +47,8 @@ export function SubmitForm() {
   const [file, setFile] = useState<File | null>(null);
   const [instruction, setInstruction] = useState("");
   const [layout, setLayout] = useState<LayoutId>("auto");
+  const [clipLength, setClipLength] = useState<ClipLengthId>("auto");
+  const [targetClips, setTargetClips] = useState<number | null>(null);
   const [captions, setCaptions] = useState(true);
   const [captionStyle, setCaptionStyle] = useState("bold");
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
@@ -83,6 +86,8 @@ export function SubmitForm() {
         ...(instruction.trim() ? { instruction: instruction.trim() } : {}),
         layout,
         caption_style: captions ? captionStyle : "none",
+        clip_length: clipLength,
+        target_clips: targetClips,
       };
       if (tab === "link") {
         project = await api.createProject({ source_type: "youtube", source_url: url.trim(), ...extra });
@@ -210,6 +215,13 @@ export function SubmitForm() {
               ))}
             </div>
           </div>
+
+          <ClipOptions
+            length={clipLength}
+            onLengthChange={setClipLength}
+            count={targetClips}
+            onCountChange={setTargetClips}
+          />
 
           <div className="flex flex-col gap-3 rounded-2xl bg-secondary/60 p-4">
             <div className="flex flex-wrap items-center justify-between gap-2">

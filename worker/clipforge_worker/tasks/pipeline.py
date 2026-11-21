@@ -39,6 +39,7 @@ from app.models import (
     SourceType,
     VideoProject,
 )
+from app.services.editing import CLIP_LENGTHS
 from clipforge_worker.celery_app import app
 from clipforge_worker.config import get_settings
 from clipforge_worker.context import (
@@ -282,6 +283,7 @@ def find_highlights(self, project_id: str) -> None:
             transcript = transcript.model_copy(update={"duration": p.duration})
         instruction, key = p.instruction, p.storage_key
         project_layout, project_style = p.layout, p.caption_style
+        clip_length, target_clips = p.clip_length, p.target_clips
 
     rep.stage("finding_highlights", 0, "Asking Gemini for the best moments", force=True)
     mode = settings.highlight_use_frames
@@ -295,11 +297,19 @@ def find_highlights(self, project_id: str) -> None:
         rep.stage("finding_highlights", 0.1, "Sampling video frames", force=True)
         frames = sample_frames(ensure_local_source(project_id, key), transcript.duration, settings.max_frames)
 
+    # The user's picks on the new-project form override the defaults; "auto" / unset keeps them.
+    min_seconds, max_seconds = CLIP_LENGTHS.get(clip_length or "auto") or (
+        settings.highlight_min_seconds,
+        settings.highlight_max_seconds,
+    )
+    min_clips, max_clips = (
+        (target_clips, target_clips) if target_clips else (settings.highlight_min_clips, settings.highlight_max_clips)
+    )
     options = HighlightOptions(
-        min_seconds=settings.highlight_min_seconds,
-        max_seconds=settings.highlight_max_seconds,
-        min_clips=settings.highlight_min_clips,
-        max_clips=settings.highlight_max_clips,
+        min_seconds=min_seconds,
+        max_seconds=max_seconds,
+        min_clips=min_clips,
+        max_clips=max_clips,
         chunk_threshold=settings.highlight_chunk_threshold_seconds,
         chunk_seconds=settings.highlight_chunk_seconds,
         chunk_overlap=settings.highlight_chunk_overlap_seconds,

@@ -61,6 +61,8 @@ async def create_project(
         instruction=body.instruction,
         layout=body.layout,
         caption_style=body.caption_style,
+        clip_length=body.clip_length,
+        target_clips=body.target_clips,
         status=ProjectStatus.queued,
         progress=0,
         status_message="Waiting for a worker",

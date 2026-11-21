@@ -83,7 +83,7 @@ def select_highlights(
             min_seconds=options.min_seconds,
             max_seconds=options.max_seconds,
             # Each window proposes a few clips; merging keeps the best overall.
-            min_clips=max(2, options.min_clips // 2) if multi else options.min_clips,
+            min_clips=min(max(2, options.min_clips // 2), options.max_clips) if multi else options.min_clips,
             max_clips=options.max_clips,
             instruction=instruction,
             window=(chunk.start, chunk.end) if multi else None,
