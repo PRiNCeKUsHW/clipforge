@@ -80,10 +80,16 @@ NVIDIA GPU, builds everything and opens <http://localhost:3000>. **The first bui
    ([docs/DEPLOYMENT.md](docs/DEPLOYMENT.md#4-youtube-publishing-google-cloud), needs your own Google/Meta developer app).
 
 ### Every day after that
-1. Start **Docker Desktop** and wait for *Engine running*.
-2. The app starts by itself with Docker. If not, run in the project folder:
-   `docker compose up -d` (with an NVIDIA GPU: `docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d`).
-3. Open <http://localhost:3000>.
+Run in the project folder:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\start.ps1
+```
+
+It starts Docker Desktop if needed, starts the app (with the GPU if you have one; add `-Cpu` to skip it)
+and opens <http://localhost:3000>. To do it by hand instead: start **Docker Desktop**, wait for
+*Engine running*, run `docker compose up -d` (with an NVIDIA GPU:
+`docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d`) and open <http://localhost:3000>.
 
 To stop it: `docker compose stop`. To get updates: `git pull` then run the setup script again.
 
@@ -210,6 +216,7 @@ worker/     Celery tasks: ingest, transcription, highlights, reframe, render cli
 renderer/   Remotion composition (captions, styles, crop) + render service
 frontend/   Next.js 16 (App Router) + Tailwind + shadcn/ui + TanStack Query
 scripts/    setup.ps1: one-time Windows setup (creates .env, secrets, starts Docker)
+            start.ps1: daily start (launches Docker Desktop, starts the app, opens the browser)
 deploy/     Caddyfile for production
 docs/       DEPLOYMENT.md (VPS, Vercel, Railway/Render, R2, Google + Meta app setup)
 ```
@@ -218,6 +225,7 @@ docs/       DEPLOYMENT.md (VPS, Vercel, Railway/Render, R2, Google + Meta app se
 
 | Symptom | Fix |
 |---|---|
+| Docker Desktop: "initializing Secrets Engine … The file cannot be accessed by the system" | Docker wasn't shut down cleanly. Click **Quit** (not *Reset to factory defaults*) and run `scripts\start.ps1`, which clears the leftover socket |
 | "GEMINI_API_KEY is not set" | add it to `.env`, `docker compose up -d`, then **Retry** |
 | Project stuck, "This looks stuck" | a worker restarted mid-task; click **Retry** (finished steps are skipped) |
 | Workers die on long videos | raise Docker's memory: `%USERPROFILE%\.wslconfig` → `[wsl2]` `memory=10GB`, then `wsl --shutdown` |
